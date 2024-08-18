@@ -14,10 +14,13 @@ class FormularioMaestroDesign(tk.Tk):
     def __init__(self):
         super().__init__()  ##al heredar, invocamos al constructor del padre
         self.logo = util_img.leer_imagen('./imagenes/logo_central.png', (560, 136))
-        self.perfil = util_img.leer_imagen('./imagenes/foto_perfil_felix.png', (100, 100))
+        self.perfil = util_img.leer_imagen('./imagenes/foto_perfil_felix_redondo.png', (250, 200)) #width,height
         self.config_window()
         self.paneles()
         self.controles_barra_superior()
+        self.controles_menu_lateral()
+        self.controles_cuerpo()
+
         
     # Codigo para ordenar la configuracion inicial de la ventana    
     def config_window(self):
@@ -60,9 +63,9 @@ class FormularioMaestroDesign(tk.Tk):
         img = Image.open("imagenes/assets/bars-solid-blanco_400x400.png")
         img = img.resize((20, 20), Image.Resampling.LANCZOS)  # Redimensionar si es necesario
         self.photo = ImageTk.PhotoImage(img)  ##tengo que hacerlo con el self, ya que sino no me muestra la foto.
-        self.buttonMenuLateral = tk.Button(self.barra_superior, text='prueba', image=self.photo, font=font_awesome,
-                                           command=lambda: print("¡Botón presionado!"), bd=0, bg=COLOR_BARRA_SUPERIOR, fg='white')
-        self.buttonMenuLateral.pack(side=tk.LEFT)
+        self.buttonBarraSuperior = tk.Button(self.barra_superior, text='prueba', image=self.photo, font=font_awesome,
+                                           command=self.toggle_panel, bd=0, bg=COLOR_BARRA_SUPERIOR, fg='white')
+        self.buttonBarraSuperior.pack(side=tk.LEFT)
 
         # Etiqueta de información
         self.labelInformacion = tk.Label(self.barra_superior, text='felix@fjgestiones.com')
@@ -71,5 +74,73 @@ class FormularioMaestroDesign(tk.Tk):
         self.labelInformacion.pack(side=tk.RIGHT)
 
 
+    # Controles de barra superior
+    def controles_menu_lateral(self):
 
+
+        # Configuracion del menú lateral
+        ancho_menu = 20
+        alto_menu = 2
+        font_awesome = font.Font(family='FontAwesome', size=15)
+        
+        # Etiquetas de perfil
+        self.labelPerfil = tk.Label(
+            self.menu_lateral, image=self.perfil, bg=COLOR_MENU_LATERAL)
+        self.labelPerfil.pack(side=tk.TOP, pady=10)
+
+        # Botón del menú lateral
+        self.buttonDashBoard =tk.Button(self.menu_lateral)
+        self.buttonProfile =tk.Button(self.menu_lateral)
+        self.buttonPicture =tk.Button(self.menu_lateral)
+        self.buttonInfo =tk.Button(self.menu_lateral)
+        self.buttonSettings =tk.Button(self.menu_lateral)
+
+        ## Lista de botones para configurarlos de la misma manera
+        buttons_menu_lateral_list = [
+            ("Dashboard", "💻", self.buttonDashBoard),
+            ("Profile", "🙎", self.buttonProfile),
+            ("Picture", "🖼️", self.buttonPicture),
+            ("Info", "ℹ️", self.buttonInfo),
+            ("Settings", "⚙️", self.buttonSettings),
+        ]
+
+        for text, icon, button in buttons_menu_lateral_list:
+            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu)
+
+    # Controles de cuerpo
+    def controles_cuerpo(self):
+        # Imagen en el cuerpo principal
+        label = tk.Label(self.cuerpo_principal, image=self.logo,
+                         bg=COLOR_CUERPO_PRINCIPAL)
+        label.place(x=0, y=0, relwidth=1, relheight=1)
+
+
+    ## Función para configurar botones con el for
+    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu):
+        button.config(text=f'{text}    {icon}', anchor="w", font=font_awesome,
+                      bd=0, bg=COLOR_MENU_LATERAL, fg="white", width=ancho_menu, height=alto_menu)
+        button.pack(side=tk.TOP)
+        self.bind_hover_events(button)
+
+        ## Asociar eventos Enter y Leave con la función dinámica
+    def bind_hover_events(self, button):
+        button.bind("<Enter>", lambda event: self.on_enter(event, button))
+        button.bind("<Leave>", lambda event: self.on_leave(event, button))
+
+        # Cambiar el estilo al pasar el ratón por encima
+    def on_enter(self, event, button):
+        button.config(bg=COLOR_MENU_CURSOR_ENCIMA, fg="white")
+
+        # Restaurar estilo al salir el ratón
+    def on_leave(self, event, button):
+        button.config(bg=COLOR_MENU_LATERAL, fg="white")
+
+        # Alternar visibilidad del menú lateral
+    def toggle_panel(self):
+        if self.menu_lateral.winfo_ismapped():
+            self.menu_lateral.pack_forget()
+        else:
+            self.menu_lateral.pack(side=tk.LEFT, fill='y')
+
+    
 
