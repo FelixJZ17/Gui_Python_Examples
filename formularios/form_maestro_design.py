@@ -8,13 +8,19 @@ import util.util_imagenes as util_img
 
 import fontawesome as fa
 
+### Importo para llamar a los otros formularios que se configuen
+from formularios.form_info_design import FormularioInfoDesign
+from formularios.form_sitio_construccion import FormularioSitioConstruccionDesign
+from formularios.form_graficas_design import FormularioGraficasDesign
+
 class FormularioMaestroDesign(tk.Tk):
 
     # Constructor de la clase
     def __init__(self):
         super().__init__()  ##al heredar, invocamos al constructor del padre
-        self.logo = util_img.leer_imagen('./imagenes/logo_central.png', (560, 136))
+        self.logo = util_img.leer_imagen('./imagenes/logo_central.png', (560, 136)) #width,height
         self.perfil = util_img.leer_imagen('./imagenes/foto_perfil_felix_redondo.png', (250, 200)) #width,height
+        self.img_sitio_construccion = util_img.leer_imagen('./imagenes/sitio_construccion.png', (300, 300)) #width,height
         self.config_window()
         self.paneles()
         self.controles_barra_superior()
@@ -97,15 +103,15 @@ class FormularioMaestroDesign(tk.Tk):
 
         ## Lista de botones para configurarlos de la misma manera
         buttons_menu_lateral_list = [
-            ("Dashboard", "💻", self.buttonDashBoard),
-            ("Profile", "🙎", self.buttonProfile),
-            ("Picture", "🖼️", self.buttonPicture),
-            ("Info", "ℹ️", self.buttonInfo),
-            ("Settings", "⚙️", self.buttonSettings),
+            ("Dashboard", "💻", self.buttonDashBoard, self.abrir_panel_graficas),
+            ("Profile", "🙎", self.buttonProfile, self.abrir_panel_construccion),
+            ("Picture", "🖼️", self.buttonPicture, self.abrir_panel_construccion),
+            ("Info", "ℹ️", self.buttonInfo, self.abrir_panel_info),
+            ("Settings", "⚙️", self.buttonSettings, self.abrir_panel_construccion),
         ]
 
-        for text, icon, button in buttons_menu_lateral_list:
-            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu)
+        for text, icon, button, comando in buttons_menu_lateral_list:
+            self.configurar_boton_menu(button, text, icon, font_awesome, ancho_menu, alto_menu, comando)
 
     # Controles de cuerpo
     def controles_cuerpo(self):
@@ -116,9 +122,10 @@ class FormularioMaestroDesign(tk.Tk):
 
 
     ## Función para configurar botones con el for
-    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu):
+    def configurar_boton_menu(self, button, text, icon, font_awesome, ancho_menu, alto_menu, comando):
         button.config(text=f'{text}    {icon}', anchor="w", font=font_awesome,
-                      bd=0, bg=COLOR_MENU_LATERAL, fg="white", width=ancho_menu, height=alto_menu)
+                      bd=0, bg=COLOR_MENU_LATERAL, fg="white", width=ancho_menu, height=alto_menu,
+                      command=comando)
         button.pack(side=tk.TOP)
         self.bind_hover_events(button)
 
@@ -142,5 +149,20 @@ class FormularioMaestroDesign(tk.Tk):
         else:
             self.menu_lateral.pack(side=tk.LEFT, fill='y')
 
-    
+    ## Metodo para llamar a otros formularios
+    def abrir_panel_info(self):
+        FormularioInfoDesign()
 
+
+    def abrir_panel_graficas(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        FormularioGraficasDesign(self.cuerpo_principal)
+
+    def abrir_panel_construccion(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        FormularioSitioConstruccionDesign(self.cuerpo_principal, self.img_sitio_construccion)
+
+    ## metodo para limpiar el panel que le pase por parámetro. 
+    def limpiar_panel(self, panel):
+        for widget in panel.winfo_children():
+            widget.destroy()

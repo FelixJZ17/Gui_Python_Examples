@@ -3,6 +3,7 @@ las imágenes deben de estar nombradas de la siguiente manera:
    - logo.ico
    - logo_central.png
    - foto_perfil_felix.png
+   - sitio_construccion.png
 
 Todo en el directorio imagenes/....
 
